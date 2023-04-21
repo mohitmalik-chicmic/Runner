@@ -37,51 +37,36 @@ export class Pendulem extends Component {
     // }
     update(dt) {
         for (let i = 0; i < this.node.children.length; i++) {
-            this.childNode = this.node.children[i];
-            var axis_z = v3(0, 0, 1);
-            let tempQuat_z = new Quat();
-            // console.log(tempQuat_z)
-            // (40 * dt * (3.14159 / 50)) => affects speed of Rotation
-            Quat.fromAxisAngle(tempQuat_z, axis_z, this.speedDep * dt * (3.14159 / 120));
-            // console.log("Rotation", Quat.fromAxisAngle(tempQuat_z, axis_z, 40 * dt * (3.14159 / 180)))
-            let nodeRot = new Quat();
-            // console.log("nodeRot", nodeRot)
-            let OutRot = new Quat();
-            // console.log("OutRot", OutRot)
-            this.childNode.getRotation(nodeRot);
-            let rot = this.childNode.getRotation(nodeRot);
-            // console.log("initial Z pos", rot.z)
-            if (!this.flag) {
-                if (rot.z < -0.38)
-                    this.speedDep = -40
-                if (rot.z > 0.45)
-                    this.flag = true
-            }
-            if (this.flag) {
-                if (rot.z > 0.45)
-                    this.speedDep = 40
-                if (rot.z < -0.38)
-                    this.flag = false
-            }
-            // if (!this.flag) {
-            //     if (rot.z < -0.38)
-            //         this.speedDep = -40
-            //     if (rot.z > 0.45)
-            //         this.flag = true
-            // }
-            // if (this.flag) {
-            //     if (rot.z > 0.45)
-            //         this.speedDep = 40
-            //     if (rot.z < -0.38)
-            //         this.flag = false
-            // }
-
-            //  console.log("this.childNode.getRotation(nodeRot);", this.childNode.getRotation(nodeRot))
-            Quat.multiply(OutRot, tempQuat_z, nodeRot);
-            //   console.log("Multiply", OutRot)
-            // if (OutRot.z < 0.5)
-            this.childNode.setRotation(OutRot)
-            //***************************************************************** */
+            this.scheduleOnce(() => {
+                this.node.children[i].active = true
+                this.childNode = this.node.children[i];
+                var axis_z = v3(0, 0, 1);
+                let tempQuat_z = new Quat();
+                Quat.fromAxisAngle(tempQuat_z, axis_z, this.speedDep * dt * (3.14159 / 120));
+                let nodeRot = new Quat();
+                // console.log("nodeRot", nodeRot)
+                let OutRot = new Quat();
+                console.log("OutRot", OutRot)
+                this.childNode.getRotation(nodeRot);
+                let rot = this.childNode.getRotation(nodeRot);
+                // console.log("initial Z pos", rot.z)
+                let zPos = rot.z * 100;
+                if (!this.flag) {
+                    if (zPos <= -40)
+                        this.speedDep = -40
+                    if (zPos >= 40)
+                        this.flag = true
+                }
+                if (this.flag) {
+                    if (zPos >= 40)
+                        this.speedDep = 40
+                    if (zPos <= -40)
+                        this.flag = false
+                }
+                Quat.multiply(OutRot, tempQuat_z, nodeRot);
+                this.childNode.setRotation(OutRot)
+                //***************************************************************** */
+            })
         }
     }
     addMovependulum() {
@@ -101,6 +86,7 @@ export class Pendulem extends Component {
             }
         }, 0, macro.REPEAT_FOREVER, 0)
     }
+
     stoppendulumMovement() {
         this.unscheduleAllCallbacks()
     }
