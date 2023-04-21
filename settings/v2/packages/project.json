@@ -1,0 +1,19 @@
+{
+  "physics": {
+    "collisionGroups": [
+      {
+        "index": 1,
+        "name": "SOLDIER"
+      },
+      {
+        "index": 2,
+        "name": "HURDLE"
+      }
+    ],
+    "collisionMatrix": {
+      "0": 5,
+      "1": 4,
+      "2": 3
+    }
+  }
+}
